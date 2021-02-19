@@ -1,0 +1,106 @@
+ public abstract class BurgerComponent
+    {
+        public abstract string Name { get; }
+        public abstract int Price { get; }
+    }
+
+
+ public class BasicBurger : BurgerComponent
+    {
+        private string _name = "Basic Burger";
+        private int _price = 20;
+
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+        public override int Price
+        {
+            get { return _price; }
+        }
+    }
+
+
+
+
+ public abstract class Decorator : BurgerComponent
+    {
+        protected BurgerComponent _component;
+        protected string _name = "";
+        protected int _price = 0;
+
+        protected Decorator(BurgerComponent component)
+        {
+            _component = component;
+        }
+        public override string Name
+        {
+            get { return string.Format("{0}, {1}", _component.Name, _name); }
+        }
+
+        public override int Price
+        {
+            get { return _component.Price + _price; }
+        }
+       
+
+    }
+
+
+
+
+-------------------
+
+
+ public  class WheatBread : Decorator
+    {
+        public WheatBread(BurgerComponent component)
+            : base(component)
+        {
+            _name = "Wheat Bread";
+            _price = 20;
+        }
+    }
+
+ public class Ham : Decorator
+    {
+        public Ham(BurgerComponent component)
+            : base(component)
+        {
+            _name = "Ham";
+            _price = 10;
+        }
+    }
+
+ public class Cheese : Decorator
+    {
+        public Cheese(BurgerComponent component)
+            : base(component)
+        {
+            _name = "Cheese";
+            _price = 10;
+        }
+    }
+
+
+
+-----------------------------
+
+ var burger = new BasicBurger();
+            Assert.AreEqual(burger.Price, 20);
+
+            var wheatBreadBurger = new WheatBread(burger);
+            Assert.AreEqual(wheatBreadBurger.Price, 40);
+
+            var hamBurger = new Ham(wheatBreadBurger);
+            Assert.AreEqual(hamBurger.Price, 50);
+
+            var cheeseHamBurger = new Cheese(new Cheese(hamBurger));
+            Assert.AreEqual(cheeseHamBurger.Price, 70);
+ 
+	    var discountedBurger = new CheeseDiscount(new CheeseDiscount(cheeseHamBurger));
+            Assert.AreEqual(discountedBurger.Price, 50);
+
+            var discountedBurger1 = new CheeseDiscount(cheeseHamBurger);
+            Assert.AreEqual(discountedBurger1.Price, 60);
